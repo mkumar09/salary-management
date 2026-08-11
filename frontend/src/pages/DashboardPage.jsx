@@ -59,7 +59,13 @@ export default function DashboardPage() {
     <Box>
       <SummaryCards summary={summary} />
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 6 }}>
+        {/*
+          Full width: department has 7 categories including long names ("Human Resources",
+          "Customer Support") that collide at half-width, and MUI silently drops overlapping
+          labels rather than showing them squeezed. Country (6, mostly shorter names) fits at
+          half-width below.
+        */}
+        <Grid size={12}>
           <AnalyticsBarChart
             title="Average salary by department"
             subtitle="USD-equivalent, active employees"
@@ -70,7 +76,7 @@ export default function DashboardPage() {
             valueFormatter={formatCompactUsd}
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={12}>
           <AnalyticsBarChart
             title="Headcount by department"
             subtitle="Active employees"
