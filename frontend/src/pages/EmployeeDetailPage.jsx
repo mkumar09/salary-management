@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -31,14 +31,17 @@ export default function EmployeeDetailPage() {
   const [error, setError] = useState(null);
   const [showAddRaise, setShowAddRaise] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [loadError, setLoadError] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
+    setLoadError(null);
     return Promise.all([fetchEmployee(id), fetchCompensationHistory(id)])
       .then(([employeeData, historyData]) => {
         setEmployee(employeeData);
         setHistory(historyData);
       })
+      .catch(() => setLoadError("Employee not found."))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -76,6 +79,17 @@ export default function EmployeeDetailPage() {
   async function handleDelete() {
     await deleteEmployee(id);
     navigate("/employees");
+  }
+
+  if (loadError) {
+    return (
+      <Stack spacing={2} sx={{ alignItems: "center", py: 8 }}>
+        <Typography color="error">{loadError}</Typography>
+        <Button component={Link} to="/employees" variant="contained">
+          Back to employees
+        </Button>
+      </Stack>
+    );
   }
 
   if (loading || !employee) {

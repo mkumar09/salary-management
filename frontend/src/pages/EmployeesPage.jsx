@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
+import Alert from "@mui/material/Alert";
 import { fetchEmployees } from "../api/employees";
 import useLookups from "../hooks/useLookups";
 import useDebouncedValue from "../hooks/useDebouncedValue";
@@ -21,6 +22,7 @@ export default function EmployeesPage() {
   const [rows, setRows] = useState([]);
   const [rowCount, setRowCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setPaginationModel((prev) => ({ ...prev, page: 0 }));
@@ -29,6 +31,7 @@ export default function EmployeesPage() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setError(null);
     fetchEmployees({
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -41,6 +44,9 @@ export default function EmployeesPage() {
         if (cancelled) return;
         setRows(data.content);
         setRowCount(data.totalElements);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Failed to load employees. Is the backend running?");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -103,6 +109,11 @@ export default function EmployeesPage() {
         Employees
       </Typography>
       <EmployeeFilters filters={filters} onChange={setFilters} departments={departments} countries={countries} />
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <div style={{ height: 600, width: "100%" }}>
         <DataGrid
           rows={rows}

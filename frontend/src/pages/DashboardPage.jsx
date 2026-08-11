@@ -3,6 +3,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
 import { fetchByCountry, fetchByDepartment, fetchDistribution, fetchSummary } from "../api/analytics";
 import SummaryCards from "../components/dashboard/SummaryCards";
 import DepartmentChart from "../components/dashboard/DepartmentChart";
@@ -15,9 +16,11 @@ export default function DashboardPage() {
   const [byCountry, setByCountry] = useState([]);
   const [distribution, setDistribution] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
+    setError(null);
     Promise.all([fetchSummary(), fetchByDepartment(), fetchByCountry(), fetchDistribution()])
       .then(([summaryData, departmentData, countryData, distributionData]) => {
         if (cancelled) return;
@@ -26,6 +29,9 @@ export default function DashboardPage() {
         setByCountry(countryData);
         setDistribution(distributionData);
       })
+      .catch(() => {
+        if (!cancelled) setError("Failed to load analytics. Is the backend running?");
+      })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
@@ -33,6 +39,10 @@ export default function DashboardPage() {
       cancelled = true;
     };
   }, []);
+
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
 
   if (loading || !summary) {
     return (
