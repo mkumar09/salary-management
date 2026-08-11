@@ -34,9 +34,19 @@ export default function AnalyticsBarChart({
       )}
       <BarChart
         dataset={data}
-        xAxis={[{ scaleType: "band", dataKey: xKey }]}
+        xAxis={[
+          {
+            scaleType: "band",
+            dataKey: xKey,
+            // Longer category names (e.g. "Human Resources") collide with their neighbors at
+            // this chart's width - MUI silently drops the overlapping label rather than
+            // overlapping text, so angle every label to guarantee all categories stay visible.
+            tickLabelStyle: { angle: -30, textAnchor: "end" },
+          },
+        ]}
         series={[{ dataKey: valueKey, label: valueLabel, color: SEQUENTIAL_BLUE, valueFormatter }]}
-        height={300}
+        height={340}
+        margin={{ bottom: 70 }}
         borderRadius={4}
         grid={{ horizontal: true }}
         slotProps={{ legend: { hidden: true } }}
