@@ -9,7 +9,19 @@ import { SEQUENTIAL_BLUE } from "../../utils/chartTheme";
  * there's only one here - a legend/per-bar color would be noise, not signal. See dataviz notes
  * in utils/chartTheme.js.
  */
-export default function AnalyticsBarChart({ title, subtitle, data, xKey, valueKey, valueLabel, valueFormatter }) {
+// MUI X Charts' tooltip calls series.valueFormatter unconditionally when the key is present -
+// an `undefined` formatter (rather than the key being absent) throws on hover, so default it.
+const defaultValueFormatter = (value) => value?.toLocaleString() ?? "";
+
+export default function AnalyticsBarChart({
+  title,
+  subtitle,
+  data,
+  xKey,
+  valueKey,
+  valueLabel,
+  valueFormatter = defaultValueFormatter,
+}) {
   return (
     <Paper sx={{ p: 3, height: "100%" }}>
       <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
