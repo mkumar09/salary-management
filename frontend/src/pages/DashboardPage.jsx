@@ -6,9 +6,8 @@ import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import { fetchByCountry, fetchByDepartment, fetchDistribution, fetchSummary } from "../api/analytics";
 import SummaryCards from "../components/dashboard/SummaryCards";
-import DepartmentChart from "../components/dashboard/DepartmentChart";
-import CountryChart from "../components/dashboard/CountryChart";
-import DistributionChart from "../components/dashboard/DistributionChart";
+import AnalyticsBarChart from "../components/dashboard/AnalyticsBarChart";
+import { formatCompactUsd } from "../utils/format";
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState(null);
@@ -61,13 +60,56 @@ export default function DashboardPage() {
       <SummaryCards summary={summary} />
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <DepartmentChart data={byDepartment} />
+          <AnalyticsBarChart
+            title="Average salary by department"
+            subtitle="USD-equivalent, active employees"
+            data={byDepartment}
+            xKey="departmentName"
+            valueKey="averageSalaryUsd"
+            valueLabel="Average salary"
+            valueFormatter={formatCompactUsd}
+          />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <CountryChart data={byCountry} />
+          <AnalyticsBarChart
+            title="Headcount by department"
+            subtitle="Active employees"
+            data={byDepartment}
+            xKey="departmentName"
+            valueKey="headcount"
+            valueLabel="Headcount"
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <AnalyticsBarChart
+            title="Average salary by country"
+            subtitle="USD-equivalent, active employees"
+            data={byCountry}
+            xKey="countryName"
+            valueKey="averageSalaryUsd"
+            valueLabel="Average salary"
+            valueFormatter={formatCompactUsd}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <AnalyticsBarChart
+            title="Headcount by country"
+            subtitle="Active employees"
+            data={byCountry}
+            xKey="countryName"
+            valueKey="headcount"
+            valueLabel="Headcount"
+          />
         </Grid>
         <Grid size={12}>
-          <DistributionChart data={distribution} />
+          <AnalyticsBarChart
+            title="Salary distribution"
+            subtitle="Active employees, USD-equivalent bands"
+            data={distribution}
+            xKey="bucketLabel"
+            valueKey="count"
+            valueLabel="Employees"
+          />
         </Grid>
       </Grid>
     </Box>
